@@ -1,0 +1,13 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startAssemble:
+  image: "${DOCKER_IMAGE_PREFIX}/${MANAGEMENT_BASE_IMAGE}"
+  stage: build
+  tags:
+    - privileged
+  script:
+    - env
+    - sh ci_build.sh
+  only:
+    - tags

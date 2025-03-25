@@ -1,0 +1,5 @@
+.venv
+.pytest_cache
+.gitlab-ci-local
+tests/__pycache__
+tests/helper/__pycache__

@@ -1,0 +1,93 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startRelease:
+  image: "${DOCKER_IMAGE_PREFIX}/${GITFLOW_BASE_IMAGE}"
+  stage: release
+  when: manual
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/check_modified_files.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/scm/version/semantic.sh
+    - sh ci-src/unified/gitflow/start_release.sh
+  only:
+    - develop
+
+startReleaseTag:
+  image: "${DOCKER_IMAGE_PREFIX}/${GITFLOW_BASE_IMAGE}"
+  stage: tag
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/scm/version/semantic.sh
+    - sh ci-src/unified/gitflow/start_release_tag.sh
+  only:
+    - master
+    - main
+
+startNextVersion:
+  image: "${DOCKER_IMAGE_PREFIX}/${GITFLOW_BASE_IMAGE}"
+  stage: nextVersion
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/scm/version/semantic.sh
+    - sh ci-src/unified/gitflow/start_next_version.sh
+  only:
+    - master
+    - main
+
+startHotfix:
+  image: "${DOCKER_IMAGE_PREFIX}/${GITFLOW_BASE_IMAGE}"
+  stage: hotfix
+  when: manual
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/scm/version/semantic.sh
+    - sh ci-src/unified/gitflow/start_hotfix.sh
+  only:
+    - master
+    - main
+
+startMRTest:
+  image: "${DOCKER_IMAGE_PREFIX}/${GITFLOW_BASE_IMAGE}"
+  stage: test
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/scm/version/semantic.sh
+    - sh ci-src/unified/gitflow/start_mr_test.sh
+  only:
+    - merge_requests

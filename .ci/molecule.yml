@@ -1,0 +1,16 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startMoleculeTest:
+  image: "${DOCKER_IMAGE_PREFIX}/${PYTHON_BASE_IMAGE}"
+  stage: test
+  script:
+    - yamllint -c ./molecule/common/.config/yamllint/config .
+    - flake8 ./molecule/
+  only:
+    - main
+    - master
+    - develop
+    - /^feature\/.*$/
+    - /^release\/.*$/
+    - merge_requests

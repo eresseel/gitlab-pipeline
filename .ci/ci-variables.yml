@@ -1,0 +1,15 @@
+variables:
+  DOCKER_IMAGE_PREFIX: "docker.io/library"
+  GITFLOW_BASE_IMAGE: "docker:27.4.0-rc.2-dind-alpine3.20"    # alpine:3.20.0
+  BUILD_BASE_IMAGE: "docker:27.0.0"      # docker:27.4.0-rc.2-dind-alpine3.20
+  FIRMWARE_BASE_IMAGE: "docker:27.0.0"   # docker:27.4.0-rc.2-dind-alpine3.20
+  HADOLINT_BASE_IMAGE: "hadolint:2.12.0"
+  MANAGEMENT_BASE_IMAGE: "docker:27.0.0"
+  PYTHON_BASE_IMAGE: "python:3.11.9"
+  TRIVY_BASE_IMAGE: "trivy:0.52.2"
+  PIPELINE_PATH: "eresseel-main/common-pipeline/gitlab-pipeline.git"
+  PIPELINE_TARGET_FOLDER: "common-pipeline"
+
+before_script:
+  - export GIT_USER_EMAIL="gitlab@eresseel.org"
+  - export GIT_USER_NAME="gitlab"

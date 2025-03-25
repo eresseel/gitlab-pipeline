@@ -1,0 +1,24 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startImageTest:
+  stage: test
+  image:
+    name: "${DOCKER_IMAGE_PREFIX}/${TRIVY_BASE_IMAGE}"
+    entrypoint: [""]
+  script:
+    - |
+      if [ "$CI_PROJECT_NAME" == "firmware" ]; then
+        echo "Trivy test skipped."
+        exit 0
+      fi
+    - export FULL_IMAGE_NAME="${DOCKER_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_NAME}"
+    - trivy image --skip-db-update -f table --exit-code 0 "${FULL_IMAGE_NAME}"
+    - trivy image --skip-db-update --exit-code 0 --format template --template "@/trivy/html.tpl" --output "${CI_PROJECT_DIR}/report.html" "${FULL_IMAGE_NAME}"
+    # - trivy image --exit-code 1 --severity CRITICAL "${FULL_IMAGE_NAME}"
+  artifacts:
+    when: always
+    paths:
+      - report.html
+  only:
+    - tags

@@ -1,0 +1,10 @@
+---
+include:
+  - local: '.ci/gitflow.yml'
+
+stages:
+  - tag
+  - release
+  - nextVersion
+  - hotfix
+  - test

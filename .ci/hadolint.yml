@@ -1,0 +1,16 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startHadolintTest:
+  image: "${DOCKER_IMAGE_PREFIX}/${HADOLINT_BASE_IMAGE}"
+  stage: test
+  script:
+    - find . -name 'Dockerfile' -exec sh -c 'echo "Linting {}" && hadolint {}' \;
+  only:
+    - main
+    - master
+    - develop
+    - /^feature\/.*$/
+    - /^release\/.*$/
+    - /^hotfix\/.*$/
+    - merge_requests

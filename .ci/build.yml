@@ -1,0 +1,36 @@
+include:
+  - local: '.ci/ci-variables.yml'
+
+startBuild:
+  image: "${DOCKER_IMAGE_PREFIX}/${BUILD_BASE_IMAGE}"
+  stage: build
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/git.sh
+    - sh ci-src/unified/git_commit_validate.sh
+    - sh ci-src/unified/check_dockerignore_file.sh
+    - sh ci-src/unified/check_docker_login.sh
+    - sh ci-src/unified/docker/build.sh
+  only:
+    - tags
+
+startImageDelete:
+  image: "${DOCKER_IMAGE_PREFIX}/${BUILD_BASE_IMAGE}"
+  stage: delete
+  script:
+    - |
+      if [ "${GITLAB_USER_LOGIN}" != "gitlab-ci-local" ]; then
+        git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${PIPELINE_PATH} ${PIPELINE_TARGET_FOLDER}
+        cp -r ${PIPELINE_TARGET_FOLDER}/.ci .ci
+        cp -r ${PIPELINE_TARGET_FOLDER}/ci-src ci-src
+      fi
+    - sh ci-src/scm/dependencies/packages.sh
+    - sh ci-src/unified/docker/delete.sh
+  only:
+    - tags
